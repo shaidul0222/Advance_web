@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reservations | Booking System</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              primary: "#e10e49",
+              light: "#ffffff",
+              dark: "#1e1e1e",
+              blue: "#263f6a",
+              green: "#284e36",
+              orange: "#e37222",
+              rose: "#c24d52",
+            }
+          },
+          boxShadow: {
+            soft: "0 8px 40px rgba(0, 0, 0, 0.45)",
+          }
+        }
+      }
+    }
+  </script>
+
+  <script type="module">
+    import {
+      initAuthUI,
+      requireAuthOrBlockPage,
+      logout
+    } from "/js/auth-ui.js";
+
+    window.logout = logout;
+
+    document.addEventListener("DOMContentLoaded", async () => {
+      initAuthUI();
+
+      const allowed = requireAuthOrBlockPage();
+      if (!allowed) return;
+
+      const form = document.getElementById("reservationForm");
+      const messageBox = document.getElementById("formMessage");
+      const listBox = document.getElementById("reservationsList");
+      const token = localStorage.getItem("token");
+      const reservationIdInput = document.getElementById("reservationId");
+      const saveBtn = document.getElementById("saveBtn");
+      const clearBtn = document.getElementById("clearBtn");
+
+      function showMessage(type, text) {
+        const styles = {
+          success: "border-brand-green/30 bg-brand-green/10 text-brand-green",
+          error: "border-brand-rose/30 bg-brand-rose/10 text-brand-rose",
+          info: "border-brand-blue/30 bg-brand-blue/10 text-brand-blue",
+        };
+
+        messageBox.className = `mt-6 rounded-2xl border px-4 py-3 text-sm ${styles[type] || styles.info}`;
+        messageBox.textContent = text;
+        messageBox.classList.remove("hidden");
+      }
+
+      function clearMessage() {
+        messageBox.className = "hidden mt-6 rounded-2xl border px-4 py-3 text-sm";
+        messageBox.textContent = "";
+      }
+
+      function formatForInput(dateValue) {
+        const d = new Date(dateValue);
+        const pad = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      }
+
+      function clearForm() {
+        reservationIdInput.value = "";
+        form.reset();
+        saveBtn.textContent = "Save reservation";
+        clearMessage();
+      }
+
+      async function loadReservations() {
+        try {
+          const response = await fetch("/api/reservations", {
+            headers: {
+              "Authorization": `Bearer ${token}`
+            }
+          });
+
+          const result = await response.json();
+
+          if (!response.ok) {
+            listBox.innerHTML = `<p class="text-sm text-brand-rose">Failed to load reservations.</p>`;
+            return;
+          }
+
+          const data = result.data;
+
+          if (!Array.isArray(data) || data.length === 0) {
+            listBox.innerHTML = `<p class="text-sm text-black/60">No reservations found.</p>`;
+            return;
+          }
+
+          listBox.innerHTML = `
+            <div class="overflow-x-auto md:overflow-visible">
+              <table class="min-w-full text-sm">
+                <thead>
+                  <tr class="border-b border-black/10 text-left">
+                    <th class="py-3 pr-4">ID</th>
+                    <th class="py-3 pr-4">Resource</th>
+                    <th class="py-3 pr-4">User</th>
+                    <th class="py-3 pr-4">Start</th>
+                    <th class="py-3 pr-4">End</th>
+                    <th class="py-3 pr-4">Note</th>
+                    <th class="py-3 pr-4">Status</th>
+                    <th class="py-3 pr-4">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${data.map(r => `
+                    <tr class="border-b border-black/5">
+                      <td class="py-3 pr-4">${r.id}</td>
+                      <td class="py-3 pr-4">${r.resourceId ?? r.resource_id}</td>
+                      <td class="py-3 pr-4">${r.userId ?? r.user_id}</td>
+                      <td class="py-3 pr-4">${new Date(r.startTime ?? r.start_time).toLocaleString()}</td>
+                      <td class="py-3 pr-4">${new Date(r.endTime ?? r.end_time).toLocaleString()}</td>
+                      <td class="py-3 pr-4">${r.note ?? ""}</td>
+                      <td class="py-3 pr-4">${r.status}</td>
+                      <td class="py-3 pr-4">
+                        <div class="flex gap-2">
+                          <button type="button"
+                            class="editBtn rounded-xl border border-black/20 px-3 py-1 text-xs font-semibold hover:bg-black/5"
+                            data-id="${r.id}">
+                            Edit
+                          </button>
+                          <button type="button"
+                            class="deleteBtn rounded-xl bg-brand-rose px-3 py-1 text-xs font-semibold text-white hover:opacity-90"
+                            data-id="${r.id}">
+                            Delete
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
+          `;
+        } catch (err) {
+          listBox.innerHTML = `<p class="text-sm text-brand-rose">Unable to load reservations.</p>`;
+        }
+      }
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        clearMessage();
+
+        const resourceId = Number(document.getElementById("resourceId").value);
+        const userId = Number(document.getElementById("userId").value);
+        const startTimeValue = document.getElementById("startTime").value;
+        const endTimeValue = document.getElementById("endTime").value;
+        const note = document.getElementById("note").value.trim();
+        const status = document.getElementById("status").value;
+
+        if (!resourceId || !userId || !startTimeValue || !endTimeValue || !status) {
+          showMessage("error", "Please fill in all required fields.");
+          return;
+        }
+
+        const startTime = new Date(startTimeValue);
+        const endTime = new Date(endTimeValue);
+
+        if (endTime <= startTime) {
+          showMessage("error", "End time must be later than start time.");
+          return;
+        }
+
+        const payload = {
+          resourceId,
+          userId,
+          startTime: startTime.toISOString(),
+          endTime: endTime.toISOString(),
+          note,
+          status
+        };
+
+        const reservationId = reservationIdInput.value;
+        const method = reservationId ? "PUT" : "POST";
+        const url = reservationId
+          ? `/api/reservations/${reservationId}`
+          : "/api/reservations";
+
+        try {
+          const response = await fetch(url, {
+            method,
+            headers: {
+              "Content-Type": "application/json",
+              "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            showMessage("error", data.error || "Failed to save reservation.");
+            return;
+          }
+
+          showMessage(
+            "success",
+            reservationId
+              ? "Reservation updated successfully."
+              : "Reservation created successfully."
+          );
+
+          clearForm();
+          await loadReservations();
+        } catch (err) {
+          showMessage("error", "Unable to contact the server.");
+        }
+      });
+
+      clearBtn.addEventListener("click", clearForm);
+
+      listBox.addEventListener("click", async (event) => {
+        const editBtn = event.target.closest(".editBtn");
+        const deleteBtn = event.target.closest(".deleteBtn");
+
+        if (editBtn) {
+          const id = editBtn.dataset.id;
+
+          try {
+            const response = await fetch(`/api/reservations/${id}`, {
+              headers: {
+                "Authorization": `Bearer ${token}`
+              }
+            });
+
+            const result = await response.json();
+
+            if (!response.ok) {
+              showMessage("error", result.error || "Failed to load reservation.");
+              return;
+            }
+
+            const r = result.data;
+
+            reservationIdInput.value = r.id;
+            document.getElementById("resourceId").value = r.resourceId ?? r.resource_id;
+            document.getElementById("userId").value = r.userId ?? r.user_id;
+            document.getElementById("startTime").value = formatForInput(r.startTime ?? r.start_time);
+            document.getElementById("endTime").value = formatForInput(r.endTime ?? r.end_time);
+            document.getElementById("note").value = r.note ?? "";
+            document.getElementById("status").value = r.status;
+
+            saveBtn.textContent = "Update reservation";
+            showMessage("info", `Editing reservation #${r.id}`);
+          } catch (err) {
+            showMessage("error", "Unable to load reservation.");
+          }
+        }
+
+        if (deleteBtn) {
+          const id = deleteBtn.dataset.id;
+          const confirmed = window.confirm("Delete this reservation?");
+
+          if (!confirmed) return;
+
+          try {
+            const response = await fetch(`/api/reservations/${id}`, {
+              method: "DELETE",
+              headers: {
+                "Authorization": `Bearer ${token}`
+              }
+            });
+
+            if (!response.ok && response.status !== 204) {
+              const result = await response.json();
+              showMessage("error", result.error || "Failed to delete reservation.");
+              return;
+            }
+
+            showMessage("success", "Reservation deleted successfully.");
+            clearForm();
+            await loadReservations();
+          } catch (err) {
+            showMessage("error", "Unable to contact the server.");
+          }
+        }
+      });
+
+      await loadReservations();
+    });
+  </script>
+</head>
+
+<body class="min-h-screen flex flex-col bg-brand-light text-brand-dark">
+  <header class="sticky top-0 z-40 bg-brand-dark text-white shadow-soft">
+    <div class="mx-auto max-w-7xl px-6">
+      <div class="flex h-16 items-center justify-between">
+        <a href="/" class="flex items-center gap-3 flex-1">
+          <img src="/logo.svg" alt="Booking System" class="h-10 w-10">
+          <div class="leading-tight">
+            <span class="block text-sm font-semibold">Booking System</span>
+            <span class="block text-xs text-white/70">Secure resource booking</span>
+          </div>
+        </a>
+
+        <nav class="flex items-center gap-3">
+          <a href="/resources" data-auth="user"
+            class="res-link rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold hover:bg-white/10 w-40 text-center cursor-not-allowed pointer-events-none">
+            Resources
+          </a>
+          <a href="/reservations" data-auth="user"
+            class="res-link rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold hover:bg-white/10 w-40 text-center cursor-not-allowed pointer-events-none">
+            Reservations
+          </a>
+          <a href="/register" data-auth="guest"
+            class="auth-link rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold hover:bg-white/10 w-40 text-center">
+            Register
+          </a>
+          <a href="/login" data-auth="guest"
+            class="auth-link rounded-xl border border-white/20 px-4 py-2 text-sm font-semibold hover:bg-white/10 w-40 text-center">
+            Sign in
+          </a>
+          <button onclick="logout()" data-auth="user"
+            class="auth-link hidden rounded-xl bg-brand-primary px-4 py-2 text-sm font-semibold text-white w-40 text-center">
+            Sign out
+          </button>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main id="mainContent" class="mx-auto max-w-7xl px-6 flex-grow">
+    <section class="py-12">
+      <div class="rounded-3xl bg-white p-8 shadow-soft">
+        <div>
+          <span class="inline-flex items-center gap-2 rounded-full bg-brand-blue/10 px-4 py-1 text-sm font-semibold text-brand-blue">
+            Reservation management
+          </span>
+          <h1 class="mt-4 text-3xl font-semibold leading-tight">Reservations</h1>
+          <p class="mt-2 max-w-2xl text-sm text-black/70">
+            Create reservations and view existing reservation records.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pb-16">
+      <div class="grid gap-8 lg:grid-cols-12">
+        <div class="lg:col-span-5">
+          <div class="rounded-3xl bg-white p-8 shadow-soft">
+            <h2 class="text-xl font-semibold">Reservation form</h2>
+            <p class="mt-1 text-sm text-black/60">
+              Fill in the reservation details below.
+            </p>
+
+            <div id="formMessage" class="hidden mt-6 rounded-2xl border px-4 py-3 text-sm" role="alert"></div>
+
+            <form class="mt-8 space-y-6" id="reservationForm" novalidate>
+              <input type="hidden" id="reservationId" />
+
+              <div>
+                <label for="resourceId" class="block text-sm font-semibold">Resource ID</label>
+                <input id="resourceId" type="number"
+                  class="mt-2 w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/30" required />
+              </div>
+
+              <div>
+                <label for="userId" class="block text-sm font-semibold">User ID</label>
+                <input id="userId" type="number"
+                  class="mt-2 w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/30" required />
+              </div>
+
+              <div>
+                <label for="startTime" class="block text-sm font-semibold">Start time</label>
+                <input id="startTime" type="datetime-local"
+                  class="mt-2 w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/30" required />
+              </div>
+
+              <div>
+                <label for="endTime" class="block text-sm font-semibold">End time</label>
+                <input id="endTime" type="datetime-local"
+                  class="mt-2 w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/30" required />
+              </div>
+
+              <div>
+                <label for="note" class="block text-sm font-semibold">Note</label>
+                <textarea id="note" rows="3"
+                  class="mt-2 w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/30"></textarea>
+              </div>
+
+              <div>
+                <label for="status" class="block text-sm font-semibold">Status</label>
+                <select id="status"
+                  class="mt-2 w-full rounded-2xl border border-black/10 bg-white px-4 py-3 text-sm outline-none focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/30" required>
+                  <option value="active">active</option>
+                  <option value="cancelled">cancelled</option>
+                  <option value="completed">completed</option>
+                </select>
+              </div>
+
+              <div class="flex gap-3">
+                <button type="submit" id="saveBtn"
+                  class="rounded-2xl bg-brand-primary px-6 py-3 text-sm font-semibold text-white hover:opacity-90">
+                  Save reservation
+                </button>
+
+                <button type="button" id="clearBtn"
+                  class="rounded-2xl border border-black/20 px-6 py-3 text-sm font-semibold hover:bg-black/5">
+                  Clear
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="lg:col-span-7">
+          <div class="rounded-3xl bg-white p-8 shadow-soft">
+            <h2 class="text-xl font-semibold">Existing reservations</h2>
+            <p class="mt-1 text-sm text-black/60">
+              Reservation records currently in the system.
+            </p>
+
+            <div id="reservationsList" class="mt-6"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="mt-auto bg-brand-dark text-white">
+    <div class="mx-auto max-w-7xl px-6 py-10">
+      <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div class="flex items-center gap-3">
+          <img src="/logo.svg" alt="Booking System" class="h-10 w-10">
+          <div class="leading-tight">
+            <span class="block text-sm font-semibold">Booking System</span>
+            <span class="block text-xs text-white/70">Secure resource booking</span>
+          </div>
+        </div>
+
+        <nav class="flex items-center gap-6 text-sm text-white/70">
+          <a href="#" class="hover:text-white">Privacy</a>
+          <a href="#" class="hover:text-white">Terms</a>
+          <a href="#" class="hover:text-white">Cookies</a>
+        </nav>
+      </div>
+
+      <div class="mt-8 border-t border-white/10 pt-6 text-xs text-white/50">
+        © 2026 Ville Heikkiniemi. All rights reserved. Source code licensed under the MIT License.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
