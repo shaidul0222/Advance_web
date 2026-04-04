@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PaddleJoy — Rental Order</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="text-gray-800 font-sans bg-gray-100">
+
+  <!-- HEADER -->
+  <header class="bg-[#004E89] fixed w-full z-50 shadow">
+    <div class="max-w-7xl mx-auto px-8 py-4 grid grid-cols-2 items-center">
+      <h1 class="text-2xl font-extrabold text-white">PaddleJoy</h1>
+      <nav class="justify-self-end space-x-6">
+        <a href="index.html" class="text-white hover:text-[#00BFA6] font-medium transition">Home</a>
+        <a href="order.html" class="text-white underline font-semibold transition">Order</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="pt-28 max-w-4xl mx-auto px-8 pb-20">
+
+    <!-- INTRO -->
+    <section class="mb-12 text-center">
+      <h2 class="text-4xl font-bold text-gray-800 mb-4">Request Your Rental</h2>
+      <p class="text-gray-700 max-w-2xl mx-auto">
+        Fill out the form below to book your kayak or paddleboard. We’ll confirm availability
+        and contact you with pickup details. Adventure starts with one click!
+      </p>
+    </section>
+
+    <!-- FORM -->
+    <section class="bg-white p-8 rounded-xl shadow">
+        <h2 class="text-3xl font-bold text-gray-800 mb-6">Customer Information</h2>
+      <form action="#" method="POST" class="space-y-10">
+
+        <!-- CUSTOMER INFO -->
+        <fieldset class="space-y-6">
+          <div>
+            <label for="fullname" class="block text-gray-700 font-medium mb-1">Full Name *</label>
+            <input id="fullname" name="fullname" type="text" required
+              class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#00BFA6]">
+          </div>
+
+          <div>
+            <label for="email" class="block text-gray-700 font-medium mb-1">Email Address *</label>
+            <input id="email" name="email" type="email" required
+              class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#00BFA6]">
+          </div>
+
+          <div>
+            <label for="phone" class="block text-gray-700 font-medium mb-1">Phone Number *</label>
+            <input id="phone" name="phone" type="tel" required placeholder="+358 40 123 4567"
+              pattern="^\+358\s?(4[0-9]|50)\s?\d{3}\s?\d{4}$"
+              title="Use a valid Finnish phone number, e.g. +358 40 123 4567"
+              class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#00BFA6]">
+          </div>
+        </fieldset>
+
+        <!-- RENTAL DETAILS -->
+        <fieldset class="space-y-6">
+          <legend class="text-2xl font-semibold text-gray-800 mb-4">Rental Details</legend>
+
+          <div>
+            <label for="item" class="block text-gray-700 font-medium mb-1">Item to Rent *</label>
+            <select id="item" name="item" required
+              class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#00BFA6]">
+              <option value="">Select an item…</option>
+              <option>Solo Kayak</option>
+              <option>Tandem Kayak</option>
+              <option>Stand-Up Paddle Board</option>
+              <option>Pro Touring Kayak</option>
+              <option>Kids Kayak</option>
+              <option>Life Jackets</option>
+            </select>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-6">
+            <div>
+              <label for="start" class="block text-gray-700 font-medium mb-1">Start Date *</label>
+              <input id="start" name="start" type="date" required
+                class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#00BFA6]">
+            </div>
+
+            <div>
+              <label for="end" class="block text-gray-700 font-medium mb-1">End Date *</label>
+              <input id="end" name="end" type="date" required
+                class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#00BFA6]">
+            </div>
+          </div>
+
+          <div>
+            <label for="qty" class="block text-gray-700 font-medium mb-1">Quantity *</label>
+            <input id="qty" name="qty" type="number" required min="1" max="10"
+              class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#00BFA6]">
+          </div>
+        </fieldset>
+
+        <!-- MESSAGE -->
+        <div>
+          <label for="msg" class="block text-gray-700 font-medium mb-1">Additional Information</label>
+          <textarea id="msg" name="message" rows="4"
+            class="w-full p-3 border rounded-lg focus:ring-2 focus:ring-[#00BFA6]"
+            placeholder="Special requests, notes, or preferences…"></textarea>
+        </div>
+
+        <!-- CONSENT -->
+        <div class="space-y-3">
+          <label class="flex items-center gap-3">
+            <input type="checkbox" required class="w-5 h-5">
+            <span>I accept the rental terms and privacy policy *</span>
+          </label>
+
+          <label class="flex items-center gap-3">
+            <input type="checkbox" class="w-5 h-5">
+            <span>Subscribe to newsletter (optional)</span>
+          </label>
+        </div>
+
+        <!-- SUBMIT -->
+        <button type="submit"
+          class="w-full bg-[#00BFA6] hover:bg-[#009B8E] text-white py-4 rounded-lg text-lg font-semibold transition">
+          Submit Rental Request
+        </button>
+
+      </form>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="text-center py-6 text-white border-t bg-[#006994]">
+    © 2025 PaddleJoy — Kayak & Paddle Rentals
+  </footer>
+
+  <!-- SCRIPT TO PREVENT PAST DATES -->
+  <script>
+    const startDate = document.getElementById('start');
+    const endDate = document.getElementById('end');
+    const today = new Date().toISOString().split('T')[0];
+
+    startDate.setAttribute('min', today);
+    endDate.setAttribute('min', today);
+
+    startDate.addEventListener('change', () => {
+      if (endDate.value < startDate.value) {
+        endDate.value = startDate.value;
+      }
+      endDate.setAttribute('min', startDate.value);
+    });
+  </script>
+
+</body>
+</html>
