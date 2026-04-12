@@ -218,39 +218,6 @@ main {
   margin-top: 2rem;
 }
 
-/* RESPONSIVE */
-@media (max-width: 900px) {
-  .rentals-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  .hero-box h2 {
-    font-size: 2.4rem;
-  }
-}
-
-@media (max-width: 600px) {
-  .header-content {
-    flex-direction: column;
-    gap: 0.8rem;
-  }
-
-  main {
-    padding-top: 130px;
-  }
-
-  .hero-box {
-    padding: 3rem 1.2rem;
-  }
-
-  .hero-box h2 {
-    font-size: 2rem;
-  }
-
-  .rentals-grid {
-    grid-template-columns: 1fr;
-  }
-}
 /* ORDER PAGE */
 .order-page {
   padding-top: 110px;
@@ -357,6 +324,52 @@ main {
   background: #009b8e;
 }
 
+.form-error {
+  margin: 0.25rem 0 0;
+  color: #c62828;
+  font-size: 0.9rem;
+}
+
+.submit-status {
+  margin-top: 1rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.response-box {
+  margin-top: 2rem;
+  background: #f3f4f6;
+  border-radius: 1rem;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.response-box h3 {
+  margin-top: 0;
+}
+
+.response-box pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
+
+.submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .rentals-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero-box h2 {
+    font-size: 2.4rem;
+  }
+}
+
 @media (max-width: 700px) {
   .date-grid {
     grid-template-columns: 1fr;
@@ -368,5 +381,28 @@ main {
 
   .order-form-section {
     padding: 1.4rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .header-content {
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+
+  main {
+    padding-top: 130px;
+  }
+
+  .hero-box {
+    padding: 3rem 1.2rem;
+  }
+
+  .hero-box h2 {
+    font-size: 2rem;
+  }
+
+  .rentals-grid {
+    grid-template-columns: 1fr;
   }
 }
