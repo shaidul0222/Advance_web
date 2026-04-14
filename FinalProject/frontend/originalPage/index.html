@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PaddleJoy — Rental Catalog</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="text-gray-800 font-sans bg-gray-100">
+
+    <!-- HEADER -->
+    <header class="bg-[#004E89] fixed w-full z-50 shadow">
+        <div class="max-w-7xl mx-auto px-8 py-4 grid grid-cols-2 items-center">
+            <h1 class="text-2xl font-extrabold text-white">PaddleJoy</h1>
+            <nav class="justify-self-end space-x-6">
+                <a href="index.html" class="text-white underline font-semibold transition">Home</a>
+                <a href="order.html" class="text-white hover:text-[#00BFA6] font-medium transition">Order</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="pt-24 max-w-7xl mx-auto px-8">
+
+        <!-- INTRO -->
+        <section class="mb-16 bg-gradient-to-r from-[#0077B6] to-[#00BFA6] p-16 rounded-xl text-center text-white">
+            <h2 class="text-5xl font-bold mb-4">Rental Catalog</h2>
+            <p class="text-xl max-w-2xl mx-auto mb-6">
+                Explore our full selection of kayaks and water-sports gear. Premium equipment at affordable prices.
+            </p>
+            <a href="#products"
+               class="bg-white text-[#0077B6] px-8 py-3 rounded-lg font-semibold hover:bg-gray-200 transition">
+                Browse Rentals
+            </a>
+        </section>
+
+        <!-- REQUIRED IMAGE -->
+        <section class="mb-16 text-center">
+            <h2 class="sr-only">Example Image Section</h2>
+            <img src="img/example.jpg" alt="Example"
+            class="w-full max-w-3xl mx-auto rounded-xl shadow-lg object-cover aspect-video" loading="lazy">
+        </section>
+
+
+        <!-- PRODUCT GRID -->
+        <section id="products" class="mb-16 bg-[#E0F7FA] p-12 rounded-xl">
+            <h3 class="text-4xl font-bold text-center mb-12 text-gray-800">Our Rentals</h3>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-10">
+
+                <!-- PRODUCT 1 -->
+                <article class="bg-white rounded-xl shadow p-6 text-center hover:shadow-2xl transition">
+                    <img src="img/solo.jpg" alt="Solo kayak rental" class="rounded-lg mb-4 w-full h-64 object-cover">
+                    <h4 class="text-xl font-semibold mb-2 text-gray-800">Solo Kayak</h4>
+                    <p class="text-gray-600 mb-2">Lightweight and stable — perfect for beginners.</p>
+                    <p class="font-bold text-[#004E89]">39 €/d · 199 €/wk</p>
+                    <a href="order.html"
+                       class="mt-3 inline-block bg-[#00BFA6] hover:bg-[#009B8E] text-white px-6 py-2 rounded-lg font-semibold transition">
+                        Rent Now
+                    </a>
+                </article>
+
+                <!-- PRODUCT 2 -->
+                <article class="bg-white rounded-xl shadow p-6 text-center hover:shadow-2xl transition">
+                    <img src="img/tandem.jpg" alt="Tandem kayak rental" class="rounded-lg mb-4 w-full h-64 object-cover">
+                    <h4 class="text-xl font-semibold mb-2 text-gray-800">Tandem Kayak</h4>
+                    <p class="text-gray-600 mb-2">Great for friends or couples.</p>
+                    <p class="font-bold text-[#004E89]">59 €/d · 279 €/wk</p>
+                    <a href="order.html"
+                       class="mt-3 inline-block bg-[#00BFA6] hover:bg-[#009B8E] text-white px-6 py-2 rounded-lg font-semibold transition">
+                        Rent Now
+                    </a>
+                </article>
+
+                <!-- PRODUCT 3 -->
+                <article class="bg-white rounded-xl shadow p-6 text-center hover:shadow-2xl transition">
+                    <img src="img/stand.jpg" alt="SUP board" class="rounded-lg mb-4 w-full h-64 object-cover">
+                    <h4 class="text-xl font-semibold mb-2 text-gray-800">SUP Board</h4>
+                    <p class="text-gray-600 mb-2">Perfect for fitness or casual exploration.</p>
+                    <p class="font-bold text-[#004E89]">29 €/d · 149 €/wk</p>
+                    <a href="order.html"
+                       class="mt-3 inline-block bg-[#00BFA6] hover:bg-[#009B8E] text-white px-6 py-2 rounded-lg font-semibold transition">
+                        Rent Now
+                    </a>
+                </article>
+
+                <!-- PRODUCT 4 -->
+                <article class="bg-white rounded-xl shadow p-6 text-center hover:shadow-2xl transition">
+                    <img src="img/advanced.webp" alt="Advanced kayak" class="rounded-lg mb-4 w-full h-64 object-cover">
+                    <h4 class="text-xl font-semibold mb-2 text-gray-800">Pro Touring Kayak</h4>
+                    <p class="text-gray-600 mb-2">Long-distance performance and stability.</p>
+                    <p class="font-bold text-[#004E89]">69 €/d · 349 €/wk</p>
+                    <a href="order.html"
+                       class="mt-3 inline-block bg-[#00BFA6] hover:bg-[#009B8E] text-white px-6 py-2 rounded-lg font-semibold transition">
+                        Rent Now
+                    </a>
+                </article>
+
+                <!-- PRODUCT 5 -->
+                <article class="bg-white rounded-xl shadow p-6 text-center hover:shadow-2xl transition">
+                    <img src="img/kids.webp" alt="Kids kayak" class="rounded-lg mb-4 w-full h-64 object-cover">
+                    <h4 class="text-xl font-semibold mb-2 text-gray-800">Kids Kayak</h4>
+                    <p class="text-gray-600 mb-2">Safe, easy-to-control kayak for kids.</p>
+                    <p class="font-bold text-[#004E89]">19 €/d · 89 €/wk</p>
+                    <a href="order.html"
+                       class="mt-3 inline-block bg-[#00BFA6] hover:bg-[#009B8E] text-white px-6 py-2 rounded-lg font-semibold transition">
+                        Rent Now
+                    </a>
+                </article>
+
+                <!-- PRODUCT 6 -->
+                <article class="bg-white rounded-xl shadow p-6 text-center hover:shadow-2xl transition">
+                    <img src="img/lifejacket.webp" alt="Life jacket" class="rounded-lg mb-4 w-full h-64 object-cover">
+                    <h4 class="text-xl font-semibold mb-2 text-gray-800">Life Jackets</h4>
+                    <p class="text-gray-600 mb-2">Essential safety gear for all water activities.</p>
+                    <p class="font-bold text-[#004E89]">5 €/d · 20 €/wk</p>
+                    <a href="order.html"
+                       class="mt-3 inline-block bg-[#00BFA6] hover:bg-[#009B8E] text-white px-6 py-2 rounded-lg font-semibold transition">
+                        Rent Now
+                    </a>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- VIDEO -->
+        <section class="mb-20">
+            <h3 class="text-4xl font-bold text-center mb-8 text-gray-800">How to Use Our Kayaks</h3>
+
+            <div class="max-w-3xl mx-auto">
+                <iframe class="w-full rounded-xl shadow-lg aspect-video"
+                        src="https://www.youtube.com/embed/TAEkR13ChPs"
+                        title="Kayak Tutorial"
+                        allowfullscreen></iframe>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="text-center py-6 text-white border-t bg-[#006994]">
+        © 2025 PaddleJoy — Kayak & Paddle Rentals
+    </footer>
+
+</body>
+</html>
